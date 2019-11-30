@@ -1,0 +1,23 @@
+#!/bin/sh -e
+#
+# S2I assemble script for the 'laravel-alpine' image.
+# The 'assemble' script builds your application source so that it is ready to run.
+#
+# For more information refer to the documentation:
+#	https://github.com/openshift/source-to-image/blob/master/docs/builder_image.md
+#
+
+echo "---> Installing application source..."
+cp -Rf /tmp/src/* /var/www/html/
+
+echo "---> Checking Token Github..."
+if [ "$GITHUB_TOKEN" != "" ] ; then echo "{ \"github-oauth\": { \"github.com\": \"$GITHUB_TOKEN\" } }" > ~/.composer/auth.json ; else echo 'env GITHUB_TOKEN not found'; fi
+
+if [ "$CHMOD_PATHS" != "" ] ; then chmod -R 777 $CHMOD_PATHS ; else echo 'env CHMOD_PATHS not set'; fi
+
+
+cd /var/www/html/
+
+if [ "$GITHUB_TOKEN" != "" ] ; then composer install ; else echo 'env GITHUB_TOKEN not set, not running compose install'; fi
+
+rm -fr /tmp/src/*

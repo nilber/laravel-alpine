@@ -1,0 +1,20 @@
+kind: ImageStream
+apiVersion: v1
+metadata:
+  name: laravel-alpine
+  annotations:
+    openshift.io/display-name: Alpine Laravel
+spec:
+  tags:
+  - name: '1.0'
+    annotations:
+      openshift.io/display-name: Alpine Laravel
+      description: |
+        Run applications laravel on Alpine.
+        IMPORTANT:  environment variables GITHUB_TOKEN and CHMOD_PATHS must be set by corresponding values in "Build Configuration" section
+      iconClass: icon-php
+      tags: builder,php,laravel-alpine
+      version: '1.0'
+    from:
+      kind: DockerImage
+      name: docker.io/nbmaster/openshift-laravel-alpine:1.0
