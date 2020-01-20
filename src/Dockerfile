@@ -25,6 +25,12 @@ RUN apk --no-cache add php7 php7-fpm php7-zip php7-json php7-openssl php7-curl \
     php7-mbstring php7-gd php7-session php7-pdo php7-pdo_mysql php7-tokenizer php7-posix \
     php7-fileinfo php7-opcache php7-cli php7-mcrypt php7-pcntl php7-iconv php7-simplexml \
     nginx curl git supervisor
+RUN apk add --no-cache --virtual .phpize-deps $PHPIZE_DEPS imagemagick-dev libtool \
+    && export CFLAGS="$PHP_CFLAGS" CPPFLAGS="$PHP_CPPFLAGS" LDFLAGS="$PHP_LDFLAGS" \
+    && pecl install imagick-3.4.3 \
+    && docker-php-ext-enable imagick \
+    && apk add --no-cache --virtual .imagick-runtime-deps imagemagick \
+    && apk del .phpize-deps
 
 # We have to pull mongodb from the edge repository for now
 #RUN apk add --no-cache --repository http://dl-3.alpinelinux.org/alpine/edge/testing php7-mongodb
