@@ -14,7 +14,7 @@ LABEL io.k8s.description="Alpine With Laravel" \
     io.openshift.s2i.scripts-url="image:///usr/libexec/s2i"
 
 # https://github.com/docker-library/php/issues/240
-#RUN apk add --no-cache --repository http://dl-3.alpinelinux.org/alpine/edge/testing gnu-libiconv
+RUN apk add --no-cache --repository http://dl-3.alpinelinux.org/alpine/edge/testing gnu-libiconv
 ENV LD_PRELOAD /usr/lib/preloadable_libiconv.so php
 
 RUN apk --no-cache update && apk --no-cache upgrade
@@ -24,13 +24,19 @@ RUN apk --no-cache add php7 php7-fpm php7-zip php7-json php7-openssl php7-curl \
     php7-zlib php7-xml php7-phar php7-intl php7-dom php7-xmlreader php7-xmlwriter php7-ctype \
     php7-mbstring php7-gd php7-session php7-pdo php7-pdo_mysql php7-tokenizer php7-posix \
     php7-fileinfo php7-opcache php7-cli php7-mcrypt php7-pcntl php7-iconv php7-simplexml \
-    nginx curl git supervisor
-RUN apk add --no-cache --virtual .phpize-deps $PHPIZE_DEPS imagemagick-dev libtool \
-    && export CFLAGS="$PHP_CFLAGS" CPPFLAGS="$PHP_CPPFLAGS" LDFLAGS="$PHP_LDFLAGS" \
-    && pecl install imagick-3.4.3 \
-    && docker-php-ext-enable imagick \
-    && apk add --no-cache --virtual .imagick-runtime-deps imagemagick \
-    && apk del .phpize-deps
+    nginx curl git supervisor php7-pecl-imagick
+RUN apk add --no-cache php7-pear php7-dev gcc musl-dev make
+# RUN apk add --no-cache --virtual .phpize-deps $PHPIZE_DEPS imagemagick-dev libtool \
+#     && export CFLAGS="$PHP_CFLAGS" CPPFLAGS="$PHP_CPPFLAGS" LDFLAGS="$PHP_LDFLAGS" \
+#     && pecl install imagick-3.4.3 \
+#     && docker-php-ext-enable imagick \
+#     && apk add --no-cache --virtual .imagick-runtime-deps imagemagick \
+#     && apk del .phpize-deps
+
+# ADD install-php-extensions /usr/local/bin/
+
+# RUN chmod uga+x /usr/local/bin/install-php-extensions && sync && \
+#     install-php-extensions imagick
 
 # We have to pull mongodb from the edge repository for now
 #RUN apk add --no-cache --repository http://dl-3.alpinelinux.org/alpine/edge/testing php7-mongodb
